@@ -1,0 +1,199 @@
+
+<h2 class="sr-only">Tent clip prototype evaluation — 10 prototypes, partial scoring 0/0.5/1 per criterion, weighted totals and live ranking</h2>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0 2rem;font-family:var(--font-sans)}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.top h1{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.top p{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
+.weights-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;align-items:center}
+.w-chip{display:flex;align-items:center;gap:5px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);padding:4px 8px;font-size:11px}
+.w-chip.p0{border-left:3px solid #D85A30;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.w-chip.p1{border-left:3px solid #1D9E75;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.w-chip.p2{border-left:3px solid #888780;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.w-chip span{color:var(--color-text-secondary)}
+.w-chip input{width:36px;font-size:12px;text-align:center;padding:1px 3px;border-radius:4px}
+.tbl-wrap{overflow-x:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:880px;table-layout:fixed}
+thead th{background:var(--color-background-secondary);padding:7px 4px;font-weight:500;font-size:11px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);text-align:center;line-height:1.3}
+thead th.proto-h{text-align:left;padding-left:10px;width:126px}
+thead th.photo-h{width:54px}
+thead th.crit-h{width:64px}
+thead th.notes-h{width:86px}
+thead th.score-h{width:60px}
+thead th.rank-h{width:46px}
+tbody tr{border-bottom:0.5px solid var(--color-border-tertiary)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--color-background-secondary)}
+td{padding:6px 3px;vertical-align:middle;text-align:center}
+td.proto-cell{text-align:left;padding-left:10px}
+.pnum{font-size:11px;color:var(--color-text-secondary)}
+.pname{font-weight:500;font-size:13px;color:var(--color-text-primary);margin-top:1px}
+.photo-slot{width:44px;height:36px;border:1.5px dashed var(--color-border-secondary);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto;background:var(--color-background-secondary)}
+.photo-slot:hover{border-color:var(--color-border-primary)}
+.photo-slot img{width:100%;height:100%;object-fit:cover;border-radius:4px}
+.photo-slot i{font-size:14px;color:var(--color-text-tertiary)}
+input[type=file]{display:none}
+.seg{display:inline-flex;border:0.5px solid var(--color-border-secondary);border-radius:6px;overflow:hidden}
+.seg button{border:none;background:transparent;padding:3px 7px;font-size:11px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);transition:background 0.1s,color 0.1s}
+.seg button:not(:last-child){border-right:0.5px solid var(--color-border-secondary)}
+.seg button.on-0{background:#FAECE7;color:#993C1D;font-weight:500}
+.seg button.on-half{background:#FAEEDA;color:#633806;font-weight:500}
+.seg button.on-1{background:#E1F5EE;color:#085041;font-weight:500}
+.score-val{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.score-bar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-top:4px;width:44px;margin-left:auto;margin-right:auto}
+.score-fill{height:3px;border-radius:2px;background:#1D9E75}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:12px;font-weight:500}
+.r1{background:#FAC775;color:#412402}
+.r2{background:#D3D1C7;color:#2C2C2A}
+.r3{background:#F5C4B3;color:#4A1B0C}
+.rn{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+textarea{width:78px;font-size:11px;padding:3px 5px;border-radius:4px;resize:vertical;min-height:32px;font-family:var(--font-sans);color:var(--color-text-primary);background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary)}
+textarea:focus{outline:none;border-color:var(--color-border-primary)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:1rem}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.leg-dot{width:8px;height:8px;border-radius:2px}
+.pbadge{font-size:10px;font-weight:500;padding:1px 5px;border-radius:8px}
+.pb0{background:#FAECE7;color:#993C1D}
+.pb1{background:#E1F5EE;color:#0F6E56}
+.pb2{background:#F1EFE8;color:#5F5E5A}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Clip prototype evaluation</h1>
+      <p>Score each criterion: 0 = no · 0.5 = partial · 1 = yes</p>
+    </div>
+    <button onclick="exportCSV()"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#D85A30"></div>P0 must-have</div>
+    <div class="leg"><div class="leg-dot" style="background:#1D9E75"></div>P1 important</div>
+    <div class="leg"><div class="leg-dot" style="background:#888780"></div>P2 nice to have</div>
+  </div>
+
+  <div class="weights-bar" id="weights-bar"></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const CR=[
+  {id:'c1',name:'Strength all directions',p:'p0',w:5},
+  {id:'c2',name:'Lay of fabric',p:'p0',w:5},
+  {id:'c3',name:'Attach anywhere',p:'p0',w:5},
+  {id:'c4',name:'Nepal origin material',p:'p0',w:5},
+  {id:'c5',name:'Plant based / plastic free',p:'p1',w:4},
+  {id:'c6',name:'Ease of use',p:'p1',w:3},
+  {id:'c7',name:'Minimal parts',p:'p1',w:3},
+  {id:'c8',name:'Original design',p:'p1',w:3},
+  {id:'c9',name:'Aesthetic',p:'p2',w:2},
+  {id:'c10',name:'Simplicity of manufacturing',p:'p2',w:2},
+];
+
+const PT=['Tube tapper snap','Tube slide on','Ring + Dowel','Ring in Ring',
+  'Oval Ring in Oval Ring','Pebble loop','Hinge clip','One sided squeeze clip','Magnet','Origami'];
+
+const S={
+  w:Object.fromEntries(CR.map(c=>[c.id,c.w])),
+  scores:Array.from({length:10},()=>Object.fromEntries(CR.map(c=>[c.id,0]))),
+  notes:Array(10).fill(''),
+};
+
+function maxScore(){return CR.reduce((s,c)=>s+(parseFloat(S.w[c.id])||0),0);}
+function total(i){return CR.reduce((s,c)=>s+S.scores[i][c.id]*(parseFloat(S.w[c.id])||0),0);}
+function ranks(){
+  const ts=PT.map((_,i)=>({i,t:total(i)}));
+  ts.sort((a,b)=>b.t-a.t);
+  const r={};ts.forEach((x,ri)=>r[x.i]=ri+1);return r;
+}
+
+function setScore(pi,cid,val){
+  S.scores[pi][cid]=val;
+  ['0','half','1'].forEach(v=>{
+    const el=document.getElementById(`s-${pi}-${cid}-${v}`);
+    if(!el)return;
+    const isOn=(v==='0'&&val===0)||(v==='half'&&val===0.5)||(v==='1'&&val===1);
+    el.className=isOn?`on-${v}`:'';
+  });
+  updateTotals();
+}
+
+function updateTotals(){
+  const mx=maxScore();const rk=ranks();
+  PT.forEach((_,i)=>{
+    const t=total(i);
+    const pct=mx>0?Math.round((t/mx)*100):0;
+    document.getElementById(`tv-${i}`).textContent=t%1===0?Math.round(t):t.toFixed(1);
+    document.getElementById(`tb-${i}`).style.width=pct+'%';
+    const r=rk[i];const el=document.getElementById(`rk-${i}`);
+    el.textContent=r;
+    el.className=`rank-badge ${r===1?'r1':r===2?'r2':r===3?'r3':'rn'}`;
+  });
+}
+
+function renderWeights(){
+  const bar=document.getElementById('weights-bar');
+  bar.innerHTML='<span style="font-size:12px;color:var(--color-text-secondary);margin-right:4px">Weights:</span>';
+  CR.forEach(c=>{
+    const chip=document.createElement('div');
+    chip.className=`w-chip ${c.p}`;
+    chip.innerHTML=`<span>${c.name}</span><input type="number" min="1" max="10" value="${S.w[c.id]}" data-cid="${c.id}" oninput="S.w[this.dataset.cid]=parseFloat(this.value)||0;updateTotals()">`;
+    bar.appendChild(chip);
+  });
+}
+
+function buildTable(){
+  const pb={p0:'pb0',p1:'pb1',p2:'pb2'};
+  let h=`<tr><th class="proto-h">Prototype</th><th class="photo-h">Photo</th>`;
+  CR.forEach(c=>{h+=`<th class="crit-h"><span class="pbadge ${pb[c.p]}">${c.p.toUpperCase()}</span><br>${c.name}</th>`;});
+  h+=`<th class="notes-h">Notes</th><th class="score-h">Score</th><th class="rank-h">Rank</th></tr>`;
+  document.getElementById('thead').innerHTML=h;
+
+  const tb=document.getElementById('tbody');tb.innerHTML='';
+  PT.forEach((name,i)=>{
+    const tr=document.createElement('tr');
+    let cells=`<td class="proto-cell"><div class="pnum">#${i+1}</div><div class="pname">${name}</div></td>`;
+    cells+=`<td><label class="photo-slot" for="ph-${i}"><span id="pp-${i}"><i class="ti ti-camera" aria-hidden="true"></i></span></label><input type="file" id="ph-${i}" accept="image/*" onchange="loadPic(${i},this)"></td>`;
+    CR.forEach(c=>{
+      cells+=`<td><div class="seg">
+        <button id="s-${i}-${c.id}-0" class="on-0" onclick="setScore(${i},'${c.id}',0)">0</button>
+        <button id="s-${i}-${c.id}-half" onclick="setScore(${i},'${c.id}',0.5)">.5</button>
+        <button id="s-${i}-${c.id}-1" onclick="setScore(${i},'${c.id}',1)">1</button>
+      </div></td>`;
+    });
+    cells+=`<td><textarea placeholder="notes…" oninput="S.notes[${i}]=this.value"></textarea></td>`;
+    cells+=`<td><div class="score-val" id="tv-${i}">0</div><div class="score-bar"><div class="score-fill" id="tb-${i}" style="width:0%"></div></div></td>`;
+    cells+=`<td><span class="rank-badge rn" id="rk-${i}">–</span></td>`;
+    tr.innerHTML=cells;tb.appendChild(tr);
+  });
+}
+
+function loadPic(i,inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{document.getElementById(`pp-${i}`).innerHTML=`<img src="${e.target.result}" alt="Prototype ${i+1}">`;};
+  r.readAsDataURL(f);
+}
+
+function exportCSV(){
+  let rows=['Prototype,'+CR.map(c=>c.name).join(',')+',Total,Notes'];
+  PT.forEach((n,i)=>{
+    rows.push(`"${n}",`+CR.map(c=>S.scores[i][c.id]).join(',')+`,${total(i).toFixed(1)},"${S.notes[i]}"`);
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download='clip-eval.csv';a.click();
+}
+
+renderWeights();
+buildTable();
+</script>
